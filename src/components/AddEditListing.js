@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { useNavigate, useParams } from "react-router-dom"; // For navigation and accessing route parameters
+import axiosInstance from "../utils/axiosInstance"; // Use your axios instance
+import { useNavigate, useParams } from "react-router-dom";
 
 const AddEditListing = () => {
   const navigate = useNavigate();
@@ -12,13 +12,14 @@ const AddEditListing = () => {
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
   const [isEditMode, setIsEditMode] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(""); // State for error messages
 
   // Check if it's edit mode and fetch data if needed
   useEffect(() => {
     if (id) {
       setIsEditMode(true);
       // Fetch the listing data for editing
-      axios
+      axiosInstance
         .get(`/api/listings/${id}`)
         .then((response) => {
           const listing = response.data;
@@ -28,13 +29,14 @@ const AddEditListing = () => {
           setDescription(listing.description);
         })
         .catch((error) => {
+          setErrorMessage("Error fetching listing details. Please try again.");
           console.error("There was an error fetching the listing:", error);
         });
     }
   }, [id]);
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const listingData = {
@@ -44,23 +46,29 @@ const AddEditListing = () => {
       description,
     };
 
-    const apiCall = isEditMode
-      ? axios.put(`/api/listings/${id}`, listingData)
-      : axios.post("/api/listings", listingData);
-
-    apiCall
-      .then(() => {
-        // After successful submission, redirect to the listings page
-        navigate("/listings"); // Assuming "/listings" shows all listings
-      })
-      .catch((error) => {
-        console.error("There was an error submitting the form:", error);
-      });
+    try {
+      if (isEditMode) {
+        await axiosInstance.put(`/api/listings/${id}`, listingData);
+      } else {
+        await axiosInstance.post("/api/listings", listingData);
+      }
+      navigate("/listings"); // Redirect to the listings page on success
+    } catch (error) {
+      setErrorMessage(
+        error.response?.data?.message || "Error submitting the form. Please try again."
+      );
+      console.error("There was an error submitting the form:", error);
+    }
   };
 
   return (
     <div className="container mt-5">
       <h2>{isEditMode ? "Edit Listing" : "Add Listing"}</h2>
+      {errorMessage && (
+        <div className="alert alert-danger" role="alert">
+          {errorMessage}
+        </div>
+      )}
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
           <label htmlFor="propertyName" className="form-label">

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axiosInstance from "../axiosInstance"; // Use your configured axios instance
+import axiosInstance from "../api/axiosInstance"; // Use your configured axios instance
 import { useNavigate, useParams } from "react-router-dom";
 
 const AddEditListing = () => {

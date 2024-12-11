@@ -6,13 +6,14 @@ const AddEditListing = () => {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  const [propertyName, setPropertyName] = useState("");
+  const [title, setTitle] = useState(""); // Aligning with backend 'title' field
   const [location, setLocation] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
   const [isEditMode, setIsEditMode] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+  // Fetch listing data for editing
   useEffect(() => {
     if (id) {
       setIsEditMode(true);
@@ -20,14 +21,14 @@ const AddEditListing = () => {
         .get(`/api/listings/${id}`)
         .then((response) => {
           const listing = response.data;
-          // Ensure fields map correctly based on API response structure
-          setPropertyName(listing.propertyName || ""); 
+          setTitle(listing.title || ""); // Map 'title' to the input
           setLocation(listing.location || "");
           setPrice(listing.price || "");
           setDescription(listing.description || "");
         })
         .catch((error) => {
           console.error("Error fetching the listing:", error);
+          setErrorMessage("Failed to fetch the listing. Please try again.");
         });
     }
   }, [id]);
@@ -36,13 +37,13 @@ const AddEditListing = () => {
     e.preventDefault();
 
     // Client-side validation
-    if (!propertyName.trim() || !location.trim() || !price || !description.trim()) {
+    if (!title.trim() || !location.trim() || !price || !description.trim()) {
       setErrorMessage("All fields are required.");
       return;
     }
 
     const listingData = {
-      propertyName,
+      title, // Use 'title' to align with backend
       location,
       price,
       description,
@@ -58,11 +59,9 @@ const AddEditListing = () => {
       })
       .catch((error) => {
         console.error("Error submitting the form:", error);
-        if (error.response && error.response.data.error) {
-          setErrorMessage(error.response.data.error);
-        } else {
-          setErrorMessage("Something went wrong. Please try again.");
-        }
+        setErrorMessage(
+          error.response?.data?.error || "Something went wrong. Please try again."
+        );
       });
   };
 
@@ -72,13 +71,13 @@ const AddEditListing = () => {
       {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
-          <label htmlFor="propertyName" className="form-label">Property Name</label>
+          <label htmlFor="title" className="form-label">Property Name</label>
           <input
             type="text"
-            id="propertyName"
+            id="title"
             className="form-control"
-            value={propertyName}
-            onChange={(e) => setPropertyName(e.target.value)}
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
             required
           />
         </div>

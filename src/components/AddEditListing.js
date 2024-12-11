@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from "react";
-import axiosInstance from "../api/axiosInstance"; // Use your configured axios instance
-import { useNavigate, useParams } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import axiosInstance from '../api/axiosInstance'; // Use your configured axios instance
+import { useNavigate, useParams } from 'react-router-dom';
 
 const AddEditListing = () => {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  const [propertyName, setPropertyName] = useState("");
-  const [location, setLocation] = useState("");
-  const [price, setPrice] = useState("");
-  const [description, setDescription] = useState("");
+  const [propertyName, setPropertyName] = useState('');
+  const [location, setLocation] = useState('');
+  const [price, setPrice] = useState('');
+  const [description, setDescription] = useState('');
   const [isEditMode, setIsEditMode] = useState(false);
 
   useEffect(() => {
@@ -19,40 +19,57 @@ const AddEditListing = () => {
         .get(`/api/listings/${id}`)
         .then((response) => {
           const listing = response.data;
-          setPropertyName(listing.propertyName);
+          setPropertyName(listing.title); // Use title from backend
           setLocation(listing.location);
           setPrice(listing.price);
           setDescription(listing.description);
         })
         .catch((error) => {
-          console.error("Error fetching the listing:", error);
+          console.error('Error fetching the listing:', error);
         });
     }
   }, [id]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const listingData = { propertyName, location, price, description };
+
+    if (!propertyName || !location || !price || !description) {
+      alert('Please fill in all fields.');
+      return;
+    }
+
+    const listingData = {
+      title: propertyName, // Rename propertyName to title
+      location,
+      price,
+      description,
+    };
 
     const apiCall = isEditMode
       ? axiosInstance.put(`/api/listings/${id}`, listingData)
-      : axiosInstance.post("/api/listings", listingData);
+      : axiosInstance.post('/api/listings', listingData);
 
     apiCall
       .then(() => {
-        navigate("/listings");
+        navigate('/listings');
       })
       .catch((error) => {
-        console.error("Error submitting the form:", error);
+        if (error.response && error.response.data) {
+          alert(`Error: ${error.response.data.error}`);
+        } else {
+          alert('Something went wrong. Please try again.');
+        }
       });
   };
 
   return (
     <div className="container mt-5">
-      <h2>{isEditMode ? "Edit Listing" : "Add Listing"}</h2>
+      <h2>{isEditMode ? 'Edit Listing' : 'Add Listing'}</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
-          <label htmlFor="propertyName" className="form-label">Property Name</label>
+          <label htmlFor="propertyName" className="form-label">
+            Property Name
+          </label>
           <input
             type="text"
             id="propertyName"
@@ -63,7 +80,9 @@ const AddEditListing = () => {
           />
         </div>
         <div className="mb-3">
-          <label htmlFor="location" className="form-label">Location</label>
+          <label htmlFor="location" className="form-label">
+            Location
+          </label>
           <input
             type="text"
             id="location"
@@ -74,7 +93,9 @@ const AddEditListing = () => {
           />
         </div>
         <div className="mb-3">
-          <label htmlFor="price" className="form-label">Price</label>
+          <label htmlFor="price" className="form-label">
+            Price
+          </label>
           <input
             type="number"
             id="price"
@@ -85,7 +106,9 @@ const AddEditListing = () => {
           />
         </div>
         <div className="mb-3">
-          <label htmlFor="description" className="form-label">Description</label>
+          <label htmlFor="description" className="form-label">
+            Description
+          </label>
           <textarea
             id="description"
             className="form-control"
@@ -94,8 +117,14 @@ const AddEditListing = () => {
             required
           />
         </div>
-        <button type="submit" className="btn btn-success">Save</button>
-        <button type="button" className="btn btn-secondary" onClick={() => navigate("/listings")}>
+        <button type="submit" className="btn btn-success">
+          Save
+        </button>
+        <button
+          type="button"
+          className="btn btn-secondary"
+          onClick={() => navigate('/listings')}
+        >
           Cancel
         </button>
       </form>

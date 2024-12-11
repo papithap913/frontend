@@ -53,7 +53,7 @@ const Dashboard = () => {
             listings.map((listing, index) => (
               <tr key={listing._id}>
                 <td>{index + 1}</td>
-                <td>{listing.propertyName}</td>
+                <td>{listing.title}</td> {/* Updated key for property name */}
                 <td>{listing.location}</td>
                 <td>${listing.price}</td>
                 <td>

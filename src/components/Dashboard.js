@@ -10,6 +10,7 @@ const Dashboard = () => {
     axiosInstance
       .get("/api/listings")
       .then((response) => {
+        console.log(response.data); // Debug: Log the response data
         setListings(response.data);
       })
       .catch((error) => {

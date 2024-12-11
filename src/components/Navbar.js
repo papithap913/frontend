@@ -8,7 +8,7 @@ const Navbar = () => {
   const handleLogout = () => {
     // Clear the token and redirect to the login page
     localStorage.removeItem("token");
-    history.push("/login"); // Redirect to login page after logout
+    history.push("/"); // Redirect to login page after logout
   };
 
   return (

@@ -114,7 +114,7 @@ const AddEditListing = () => {
           />
         </div>
         <button type="submit" className="btn btn-success">Save</button>
-        <button type="button" className="btn btn-secondary" onClick={() => navigate("/listings")}>
+        <button type="button" className="btn btn-secondary" onClick={() => navigate("/dashboard")}>
           Cancel
         </button>
       </form>

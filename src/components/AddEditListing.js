@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom"; // For redirecting after form submission
+import { useNavigate, useParams } from "react-router-dom"; // For navigation and accessing route parameters
 
-const AddEditListing = ({ match }) => {
-  const history = useNavigate();
+const AddEditListing = () => {
+  const navigate = useNavigate();
+  const { id } = useParams(); // Access the route parameter 'id'
 
   // Form state
   const [propertyName, setPropertyName] = useState("");
@@ -12,13 +13,13 @@ const AddEditListing = ({ match }) => {
   const [description, setDescription] = useState("");
   const [isEditMode, setIsEditMode] = useState(false);
 
-  // Check if it's an edit mode (based on URL params)
+  // Check if it's edit mode and fetch data if needed
   useEffect(() => {
-    if (match.params.id) {
+    if (id) {
       setIsEditMode(true);
-      // Fetch the listing data if we are in edit mode
+      // Fetch the listing data for editing
       axios
-        .get(`/api/listings/${match.params.id}`)
+        .get(`/api/listings/${id}`)
         .then((response) => {
           const listing = response.data;
           setPropertyName(listing.propertyName);
@@ -30,7 +31,7 @@ const AddEditListing = ({ match }) => {
           console.error("There was an error fetching the listing:", error);
         });
     }
-  }, [match.params.id]);
+  }, [id]);
 
   // Handle form submission
   const handleSubmit = (e) => {
@@ -44,13 +45,13 @@ const AddEditListing = ({ match }) => {
     };
 
     const apiCall = isEditMode
-      ? axios.put(`/api/listings/${match.params.id}`, listingData)
+      ? axios.put(`/api/listings/${id}`, listingData)
       : axios.post("/api/listings", listingData);
 
     apiCall
-      .then((response) => {
-        // After successful submission, redirect to listings page (or success page)
-        history.push("/listings"); // Assuming "/listings" is the page showing all listings
+      .then(() => {
+        // After successful submission, redirect to the listings page
+        navigate("/listings"); // Assuming "/listings" shows all listings
       })
       .catch((error) => {
         console.error("There was an error submitting the form:", error);
@@ -119,7 +120,11 @@ const AddEditListing = ({ match }) => {
         <button type="submit" className="btn btn-success">
           Save
         </button>{" "}
-        <button type="button" className="btn btn-secondary" onClick={() => history.push("/listings")}>
+        <button
+          type="button"
+          className="btn btn-secondary"
+          onClick={() => navigate("/listings")}
+        >
           Cancel
         </button>
       </form>

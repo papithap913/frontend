@@ -2,13 +2,13 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
-  const history = useNavigate(); // To navigate after logout
+  const navigate = useNavigate(); // To navigate after logout
   const token = localStorage.getItem("token"); // Check if the user is authenticated
 
   const handleLogout = () => {
     // Clear the token and redirect to the login page
     localStorage.removeItem("token");
-    history.push("/"); // Redirect to login page after logout
+    navigate("/"); // Redirect to login page after logout
   };
 
   return (

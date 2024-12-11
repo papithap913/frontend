@@ -21,7 +21,7 @@ const AddEditListing = () => {
         .then((response) => {
           const listing = response.data;
           // Ensure fields map correctly based on API response structure
-          setPropertyName(listing.propertyName || ""); 
+          setPropertyName(listing.title || ""); 
           setLocation(listing.location || "");
           setPrice(listing.price || "");
           setDescription(listing.description || "");

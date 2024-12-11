@@ -1,47 +1,42 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { useHistory, useNavigate } from "react-router-dom";
+import axiosInstance from "../axiosInstance";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const [listings, setListings] = useState([]);
-  const history = useNavigate();
+  const navigate = useNavigate();
 
-  // Fetch listings from the backend
   useEffect(() => {
-    axios
-      .get("/api/listings") // Assuming this is your API endpoint to fetch listings
+    axiosInstance
+      .get("/api/listings")
       .then((response) => {
         setListings(response.data);
       })
       .catch((error) => {
-        console.error("There was an error fetching the listings:", error);
+        console.error("Error fetching listings:", error);
       });
   }, []);
 
-  // Handle the delete action
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this listing?")) {
-      axios
+      axiosInstance
         .delete(`/api/listings/${id}`)
-        .then((response) => {
-          // After deleting, refresh the listings list
+        .then(() => {
           setListings(listings.filter((listing) => listing._id !== id));
         })
         .catch((error) => {
-          console.error("There was an error deleting the listing:", error);
+          console.error("Error deleting listing:", error);
         });
     }
   };
 
-  // Handle the edit action
   const handleEdit = (id) => {
-    history.push(`/edit-listing/${id}`); // Assuming the route for edit is '/edit-listing/:id'
+    navigate(`/edit-listing/${id}`);
   };
 
   return (
     <div className="container mt-5">
       <h2>Agent Dashboard</h2>
-      <p>Welcome to the Agent Portal! Manage your listings below:</p>
       <table className="table">
         <thead>
           <tr>
@@ -66,7 +61,7 @@ const Dashboard = () => {
                     onClick={() => handleEdit(listing._id)}
                   >
                     Edit
-                  </button>{" "}
+                  </button>
                   <button
                     className="btn btn-danger btn-sm"
                     onClick={() => handleDelete(listing._id)}

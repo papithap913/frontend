@@ -53,7 +53,7 @@ const AddEditListing = () => {
 
     apiCall
       .then(() => {
-        navigate("/listings");
+        navigate("/dashboard");
       })
       .catch((error) => {
         console.error("Error submitting the form:", error);
